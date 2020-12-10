@@ -7,6 +7,7 @@ import (
 
 type NextHandle func()
 type Middleware func(ctx *Context, next NextHandle)
+type H map[string]interface{}
 
 type Application struct {
 	middlewares []Middleware
