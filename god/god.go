@@ -7,18 +7,19 @@ import (
 
 type NextHandle func()
 type Middleware func(ctx *Context, next NextHandle)
+type HandlerFunc func(ctx *Context)
 type H map[string]interface{}
 
 type Application struct {
 	middlewares []Middleware
 }
 
-func New() *Application {
+func New() (app *Application) {
 	return &Application{}
 }
 
 func (app *Application) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	ctx := NewContext(w, req)
+	ctx := newContext(w, req)
 	app.dispatchMiddleware(ctx, 0)
 	ctx.end()
 }
@@ -27,8 +28,11 @@ func (app *Application) Listen(addr int) error {
 	return http.ListenAndServe(":"+strconv.Itoa(addr), app)
 }
 
-func (app *Application) Use(middleware Middleware) {
-	app.middlewares = append(app.middlewares, middleware)
+func (app *Application) Use(middlewares ...Middleware) {
+	for i := 0; i < len(middlewares); i++ {
+		middleware := middlewares[i]
+		app.middlewares = append(app.middlewares, middleware)
+	}
 }
 
 func (app *Application) dispatchMiddleware(ctx *Context, index int) {
