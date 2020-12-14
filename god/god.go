@@ -18,6 +18,12 @@ func New() (app *Application) {
 	return &Application{}
 }
 
+func Default() (app *Application) {
+	app = &Application{}
+	app.Use(FilterFaviconIco(), Logger(), Recovery())
+	return
+}
+
 func (app *Application) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	ctx := newContext(w, req)
 	app.dispatchMiddleware(ctx, 0)

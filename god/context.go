@@ -67,7 +67,11 @@ func (ctx *Context) Param(key string) string {
 	return value
 }
 
-
+func (ctx *Context) Error(message string) {
+	ctx.Status(http.StatusInternalServerError)
+	ctx.SetHeader("Content-Type", "text/plain")
+	ctx.Writer.Write([]byte(message))
+}
 
 func (ctx *Context) JSON(obj interface{}) {
 	ctx.Status(http.StatusOK)
